@@ -7,7 +7,7 @@ import { Footer } from '../components/Footer'
 
 interface About {
   name?: string
-  bio?: unknown
+  bio?: unknown[]
   photo?: {
     _type: string
     asset: { _ref: string }
@@ -52,7 +52,7 @@ export default async function AboutPage() {
           <p className="mb-6">{about.name}</p>
         )}
 
-        {about.bio && (
+        {Array.isArray(about.bio) && about.bio.length > 0 && (
           <div className="mb-10 max-w-full md:max-w-[760px] text-[14px]">
             <RichText value={about.bio} spacedParagraphs={true} />
           </div>
