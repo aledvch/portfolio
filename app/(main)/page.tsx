@@ -1,8 +1,8 @@
 import { client } from '@/sanity/lib/client'
 import { blocksQuery } from '@/sanity/lib/queries'
-import { GalleryBlock } from './components/GalleryBlock'
-import { RichText } from './components/RichText'
-import { Footer } from './components/Footer'
+import { GalleryBlock } from '../components/GalleryBlock'
+import { RichText } from '../components/RichText'
+import { Footer } from '../components/Footer'
 
 function getEmbedUrl(url: string): string {
   const youtube = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/)

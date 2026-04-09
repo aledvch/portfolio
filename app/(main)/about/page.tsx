@@ -2,8 +2,8 @@ import Image from 'next/image'
 import { client } from '@/sanity/lib/client'
 import { aboutQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/sanity/lib/image'
-import { RichText } from '../components/RichText'
-import { Footer } from '../components/Footer'
+import { RichText } from '../../components/RichText'
+import { Footer } from '../../components/Footer'
 
 interface About {
   name?: string
