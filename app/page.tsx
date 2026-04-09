@@ -34,7 +34,7 @@ interface Block {
   size?: Size
   images?: SanityImage[]
   videoUrl?: string
-  caption?: unknown
+  caption?: unknown[]
 }
 
 export default async function HomePage() {
@@ -59,7 +59,7 @@ export default async function HomePage() {
                       title="Video"
                     />
                   </div>
-                  {block.caption && (
+                  {Array.isArray(block.caption) && block.caption.length > 0 && (
                     <div className="mt-3 opacity-60 text-[14px]">
                       <RichText value={block.caption} />
                     </div>

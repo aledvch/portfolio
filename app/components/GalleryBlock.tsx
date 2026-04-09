@@ -14,7 +14,7 @@ interface SanityImage {
 
 interface GalleryBlockProps {
   images: SanityImage[]
-  caption?: unknown
+  caption?: unknown[]
 }
 
 export function GalleryBlock({ images, caption }: GalleryBlockProps) {
@@ -55,7 +55,7 @@ export function GalleryBlock({ images, caption }: GalleryBlockProps) {
         </div>
       )}
 
-      {caption && (
+      {Array.isArray(caption) && caption.length > 0 && (
         <div className="mt-3 opacity-60 text-[14px]">
           <RichText value={caption} />
         </div>
