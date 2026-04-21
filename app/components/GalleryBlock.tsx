@@ -20,7 +20,6 @@ interface GalleryBlockProps {
 export function GalleryBlock({ images, caption }: GalleryBlockProps) {
   const [current, setCurrent] = useState(0)
   const isGallery = images.length > 1
-  const img = images[current]
 
   return (
     <div>
@@ -30,33 +29,22 @@ export function GalleryBlock({ images, caption }: GalleryBlockProps) {
           isGallery ? () => setCurrent((current + 1) % images.length) : undefined
         }
       >
-        <Image
-          src={urlFor(img).width(1600).url()}
-          alt=""
-          width={img.dimensions?.width ?? 1600}
-          height={img.dimensions?.height ?? 900}
-          className="w-full h-auto"
-          priority={false}
-        />
+        {images.map((img, i) => (
+          <div key={img._key ?? i} style={{ display: i === current ? 'block' : 'none' }}>
+            <Image
+              src={urlFor(img).width(1600).url()}
+              alt=""
+              width={img.dimensions?.width ?? 1600}
+              height={img.dimensions?.height ?? 900}
+              className="w-full h-auto"
+              priority={i === 0}
+            />
+          </div>
+        ))}
       </div>
 
-      {isGallery && (
-        <div className="flex gap-1.5 mt-3">
-          {images.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrent(i)}
-              className={`w-1 h-1 rounded-full transition-colors ${
-                i === current ? 'bg-black' : 'bg-gray-300'
-              }`}
-              aria-label={`Immagine ${i + 1}`}
-            />
-          ))}
-        </div>
-      )}
-
       {Array.isArray(caption) && caption.length > 0 && (
-        <div className="mt-3 opacity-60 text-[14px]">
+        <div className="mt-3 text-[14px]">
           <RichText value={caption} />
         </div>
       )}
