@@ -77,6 +77,7 @@ export function GalleryBlock({ items, caption }: GalleryBlockProps) {
             />
           </>
         )}
+      </div>
 
       {Array.isArray(caption) && caption.length > 0 && (
         <div className="mt-3 text-[14px]">
