@@ -65,26 +65,18 @@ export function GalleryBlock({ items, caption }: GalleryBlockProps) {
           </div>
         ))}
 
-        {isGallery && item.mediaType !== 'video' && (
+        {isGallery && (
           <>
             <div
-              style={{ position: 'absolute', top: 0, left: 0, width: '50%', height: '100%', cursor: 'w-resize' }}
+              style={{ position: 'absolute', top: 0, left: 0, width: '50%', height: '100%', cursor: 'w-resize', zIndex: 10 }}
               onClick={goPrev}
             />
             <div
-              style={{ position: 'absolute', top: 0, right: 0, width: '50%', height: '100%', cursor: 'e-resize' }}
+              style={{ position: 'absolute', top: 0, right: 0, width: '50%', height: '100%', cursor: 'e-resize', zIndex: 10 }}
               onClick={goNext}
             />
           </>
         )}
-      </div>
-
-      {isGallery && item.mediaType === 'video' && (
-        <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-          <button onClick={goPrev} style={{ cursor: 'pointer' }}>←</button>
-          <button onClick={goNext} style={{ cursor: 'pointer' }}>→</button>
-        </div>
-      )}
 
       {Array.isArray(caption) && caption.length > 0 && (
         <div className="mt-3 text-[14px]">
