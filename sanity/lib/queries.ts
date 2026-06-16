@@ -1,13 +1,16 @@
 export const blocksQuery = `
   *[_type == "entry"] | order(order asc) {
     _id,
-    mediaType,
     size,
-    "images": images[] {
-      ...,
-      "dimensions": asset->metadata.dimensions
+    "items": items[] {
+      _key,
+      mediaType,
+      "image": image {
+        ...,
+        "dimensions": asset->metadata.dimensions
+      },
+      videoUrl,
     },
-    videoUrl,
     caption,
   }
 `

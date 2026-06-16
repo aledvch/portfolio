@@ -1,16 +1,7 @@
 import { client } from '@/sanity/lib/client'
 import { blocksQuery } from '@/sanity/lib/queries'
 import { GalleryBlock } from '../components/GalleryBlock'
-import { RichText } from '../components/RichText'
 import { Footer } from '../components/Footer'
-
-function getEmbedUrl(url: string): string {
-  const youtube = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/)
-  if (youtube) return `https://www.youtube.com/embed/${youtube[1]}`
-  const vimeo = url.match(/vimeo\.com\/(\d+)/)
-  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`
-  return url
-}
 
 type Size = 'full' | 'large' | 'medium' | 'small'
 
@@ -21,19 +12,17 @@ const sizeClass: Record<Size, string> = {
   small:  'w-full md:w-1/3',
 }
 
-interface SanityImage {
+interface MediaItem {
   _key?: string
-  _type: string
-  asset: { _ref: string }
-  dimensions?: { width: number; height: number }
+  mediaType: 'image' | 'video'
+  image?: { asset: { _ref: string }; dimensions?: { width: number; height: number } }
+  videoUrl?: string
 }
 
 interface Block {
   _id: string
-  mediaType: 'images' | 'video'
   size?: Size
-  images?: SanityImage[]
-  videoUrl?: string
+  items?: MediaItem[]
   caption?: unknown[]
 }
 
@@ -46,26 +35,9 @@ export default async function HomePage() {
         {blocks.map((block) => (
           <article key={block._id} className="mb-20">
             <div className={sizeClass[block.size ?? 'full']}>
-              {block.mediaType === 'images' && block.images && block.images.length > 0 ? (
-                <GalleryBlock images={block.images} caption={block.caption} />
-              ) : block.mediaType === 'video' && block.videoUrl ? (
-                <div>
-                  <div className="relative w-full aspect-video">
-                    <iframe
-                      src={getEmbedUrl(block.videoUrl)}
-                      className="absolute inset-0 w-full h-full"
-                      allow="autoplay; fullscreen; picture-in-picture"
-                      allowFullScreen
-                      title="Video"
-                    />
-                  </div>
-                  {Array.isArray(block.caption) && block.caption.length > 0 && (
-                    <div className="mt-3 opacity-60 text-[14px]">
-                      <RichText value={block.caption} />
-                    </div>
-                  )}
-                </div>
-              ) : null}
+              {block.items && block.items.length > 0 && (
+                <GalleryBlock items={block.items} caption={block.caption} />
+              )}
             </div>
           </article>
         ))}

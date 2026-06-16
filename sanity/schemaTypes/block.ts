@@ -33,32 +33,59 @@ export const entry = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'mediaType',
-      title: 'Tipo di media',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Immagine / Galleria', value: 'images' },
-          { title: 'Video (Vimeo / YouTube)', value: 'video' },
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'images',
-    }),
-    defineField({
-      name: 'images',
-      title: 'Immagini',
+      name: 'items',
+      title: 'Galleria',
       type: 'array',
-      of: [{ type: 'image', options: { hotspot: true } }],
-      description: '1 immagine = singola. Più immagini = galleria cliccabile.',
-      hidden: ({ document }) => document?.mediaType === 'video',
-    }),
-    defineField({
-      name: 'videoUrl',
-      title: 'URL Video',
-      type: 'url',
-      description: 'Incolla un link Vimeo o YouTube',
-      hidden: ({ document }) => document?.mediaType !== 'video',
+      description: '1 elemento = singolo. Più elementi = galleria cliccabile. Puoi mixare immagini e video.',
+      of: [
+        {
+          type: 'object',
+          name: 'mediaItem',
+          fields: [
+            defineField({
+              name: 'mediaType',
+              title: 'Tipo',
+              type: 'string',
+              options: {
+                list: [
+                  { title: 'Immagine', value: 'image' },
+                  { title: 'Video (Vimeo / YouTube)', value: 'video' },
+                ],
+                layout: 'radio',
+              },
+              initialValue: 'image',
+            }),
+            defineField({
+              name: 'image',
+              title: 'Immagine',
+              type: 'image',
+              options: { hotspot: true },
+              hidden: ({ parent }) => parent?.mediaType !== 'image',
+            }),
+            defineField({
+              name: 'videoUrl',
+              title: 'URL Video',
+              type: 'url',
+              description: 'Incolla un link Vimeo o YouTube',
+              hidden: ({ parent }) => parent?.mediaType !== 'video',
+            }),
+          ],
+          preview: {
+            select: {
+              mediaType: 'mediaType',
+              image: 'image',
+              videoUrl: 'videoUrl',
+            },
+            prepare({ mediaType, image, videoUrl }) {
+              return {
+                title: mediaType === 'video' ? (videoUrl ?? 'Video') : 'Immagine',
+                subtitle: mediaType,
+                media: image,
+              }
+            },
+          },
+        },
+      ],
     }),
     defineField({
       name: 'size',
