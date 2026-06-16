@@ -14,6 +14,7 @@ interface MediaItem {
   mediaType: 'image' | 'video'
   image?: SanityImage
   videoUrl?: string
+  videoRatio?: string
 }
 
 interface GalleryBlockProps {
@@ -23,9 +24,9 @@ interface GalleryBlockProps {
 
 function getEmbedUrl(url: string): string {
   const youtube = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/)
-  if (youtube) return `https://www.youtube.com/embed/${youtube[1]}`
+  if (youtube) return `https://www.youtube.com/embed/${youtube[1]}?autoplay=1&loop=1&mute=1&playlist=${youtube[1]}&controls=0`
   const vimeo = url.match(/vimeo\.com\/(\d+)/)
-  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}`
+  if (vimeo) return `https://player.vimeo.com/video/${vimeo[1]}?background=1&autoplay=1&loop=1&muted=1`
   return url
 }
 
@@ -44,10 +45,10 @@ export function GalleryBlock({ items, caption }: GalleryBlockProps) {
         {items.map((it, i) => (
           <div key={it._key ?? i} style={{ display: i === current ? 'block' : 'none' }}>
             {it.mediaType === 'video' && it.videoUrl ? (
-              <div className="relative w-full aspect-video">
+              <div style={{ position: 'relative', width: '100%', aspectRatio: it.videoRatio ?? '4/5' }}>
                 <iframe
                   src={getEmbedUrl(it.videoUrl)}
-                  className="absolute inset-0 w-full h-full"
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
                   allow="autoplay; fullscreen; picture-in-picture"
                   allowFullScreen
                   title="Video"

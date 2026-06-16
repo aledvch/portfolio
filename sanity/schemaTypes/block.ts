@@ -69,6 +69,22 @@ export const entry = defineType({
               description: 'Incolla un link Vimeo o YouTube',
               hidden: ({ parent }) => parent?.mediaType !== 'video',
             }),
+            defineField({
+              name: 'videoRatio',
+              title: 'Proporzioni video',
+              type: 'string',
+              options: {
+                list: [
+                  { title: 'Verticale 4:5 (Instagram)', value: '4/5' },
+                  { title: 'Verticale 9:16 (Stories/Reels)', value: '9/16' },
+                  { title: 'Quadrato 1:1', value: '1/1' },
+                  { title: 'Orizzontale 16:9', value: '16/9' },
+                ],
+                layout: 'radio',
+              },
+              initialValue: '4/5',
+              hidden: ({ parent }) => parent?.mediaType !== 'video',
+            }),
           ],
           preview: {
             select: {
