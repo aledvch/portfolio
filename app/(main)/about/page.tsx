@@ -20,7 +20,7 @@ interface About {
 }
 
 export default async function AboutPage() {
-  const about: About | null = await client.fetch(aboutQuery)
+  const about: About | null = await client.fetch(aboutQuery, {}, { next: { revalidate: 3600 } })
 
   if (!about) {
     return (
