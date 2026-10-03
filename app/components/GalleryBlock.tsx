@@ -20,6 +20,7 @@ interface MediaItem {
 interface GalleryBlockProps {
   items: MediaItem[]
   caption?: unknown[]
+  mediaClassName?: string
 }
 
 function getEmbedUrl(url: string): string {
@@ -30,7 +31,7 @@ function getEmbedUrl(url: string): string {
   return url
 }
 
-export function GalleryBlock({ items, caption }: GalleryBlockProps) {
+export function GalleryBlock({ items, caption, mediaClassName }: GalleryBlockProps) {
   const [current, setCurrent] = useState(0)
   const isGallery = items.length > 1
 
@@ -41,7 +42,7 @@ export function GalleryBlock({ items, caption }: GalleryBlockProps) {
 
   return (
     <div>
-      <div style={{ position: 'relative' }}>
+      <div className={mediaClassName} style={{ position: 'relative' }}>
         {items.map((it, i) => (
           <div key={it._key ?? i} style={{ display: i === current ? 'block' : 'none' }}>
             {it.mediaType === 'video' && it.videoUrl ? (
@@ -80,7 +81,7 @@ export function GalleryBlock({ items, caption }: GalleryBlockProps) {
       </div>
 
       {Array.isArray(caption) && caption.length > 0 && (
-        <div className="mt-3 text-[14px]">
+        <div className="mt-3 md:max-w-[70%]">
           <RichText value={caption} />
         </div>
       )}

@@ -8,7 +8,7 @@ export function NavLink() {
   const isAbout = pathname === '/about'
 
   return (
-    <Link href={isAbout ? '/' : '/about'}>
+    <Link href={isAbout ? '/' : '/about'} className="hover-link">
       {isAbout ? 'Close' : 'About'}
     </Link>
   )

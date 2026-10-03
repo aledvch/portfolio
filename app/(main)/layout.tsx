@@ -13,11 +13,11 @@ export default async function MainLayout({
 
   return (
     <>
-      <header className="flex justify-between items-start px-[20px] pt-[16px] pb-[70px] text-[14px]">
+      <header className="flex justify-between items-start px-[20px] pt-[16px] pb-[70px]">
         <div>
-          <Link href="/">Alessandro De Vecchi</Link>
+          <Link href="/" className="hover-link">Alessandro De Vecchi</Link>
           {settings?.headerText && (
-            <div className="mt-1 opacity-60">
+            <div className="mt-1">
               <RichText value={settings.headerText} />
             </div>
           )}

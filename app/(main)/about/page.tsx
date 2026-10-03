@@ -26,7 +26,7 @@ export default async function AboutPage() {
     return (
       <>
         <main className="flex-1 px-[20px]">
-          <p className="opacity-60">
+          <p>
             Pagina About non ancora configurata. Aggiungila dal pannello Sanity.
           </p>
         </main>
@@ -53,12 +53,12 @@ export default async function AboutPage() {
         )}
 
         {Array.isArray(about.bio) && about.bio.length > 0 && (
-          <div className="mb-10 max-w-full md:max-w-[760px] text-[14px]">
+          <div className="mb-10 max-w-full md:max-w-[760px]">
             <RichText value={about.bio} spacedParagraphs={true} />
           </div>
         )}
 
-        <div className="flex flex-col gap-2 text-[14px] items-start">
+        <div className="flex flex-col gap-2 items-start">
           {about.email && (
             <a href={`mailto:${about.email}`} className="portfolio-link">
               E-Mail

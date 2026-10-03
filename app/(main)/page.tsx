@@ -35,16 +35,18 @@ export default async function HomePage() {
       <main className="flex-1 px-[20px]">
         {blocks.map((block) => (
           <article key={block._id} className="mb-20">
-            <div className={sizeClass[block.size ?? 'full']}>
-              {block.items && block.items.length > 0 && (
-                <GalleryBlock items={block.items} caption={block.caption} />
-              )}
-            </div>
+            {block.items && block.items.length > 0 && (
+              <GalleryBlock
+                items={block.items}
+                caption={block.caption}
+                mediaClassName={sizeClass[block.size ?? 'full']}
+              />
+            )}
           </article>
         ))}
 
         {blocks.length === 0 && (
-          <p className="mt-16 opacity-60">
+          <p className="mt-16">
             Nessun blocco ancora. Aggiungili dal pannello Sanity.
           </p>
         )}

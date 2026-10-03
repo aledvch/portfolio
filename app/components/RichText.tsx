@@ -18,7 +18,7 @@ function createComponents(spacedParagraphs: boolean): PortableTextComponents {
     },
     block: {
       normal: ({ children, index }) => (
-        <p style={{ margin: 0, marginTop: spacedParagraphs && (index as number) > 0 ? '1.3em' : 0 }}>
+        <p style={{ margin: 0, marginTop: spacedParagraphs && (index as number) > 0 ? '1.2em' : 0 }}>
           {children}
         </p>
       ),
