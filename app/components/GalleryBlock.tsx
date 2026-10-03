@@ -81,7 +81,7 @@ export function GalleryBlock({ items, caption, mediaClassName }: GalleryBlockPro
       </div>
 
       {Array.isArray(caption) && caption.length > 0 && (
-        <div className="mt-3 md:max-w-[70%]">
+        <div className="mt-[8px] md:max-w-[70%]">
           <RichText value={caption} />
         </div>
       )}
