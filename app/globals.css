@@ -32,7 +32,15 @@ body {
   transition: color 0.15s ease;
 }
 
-.portfolio-link:hover,
-.hover-link:hover {
+/* Hover only on devices with a real pointer: on touch, :hover sticks after a tap */
+@media (hover: hover) {
+  .portfolio-link:hover,
+  .hover-link:hover {
+    color: #000000;
+  }
+}
+
+.portfolio-link:active,
+.hover-link:active {
   color: #000000;
 }
