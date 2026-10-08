@@ -16,6 +16,7 @@ interface MediaItem {
   _key?: string
   mediaType: 'image' | 'video'
   image?: { asset: { _ref: string }; dimensions?: { width: number; height: number } }
+  mobileImage?: { asset: { _ref: string } }
   videoUrl?: string
   videoRatio?: string
 }

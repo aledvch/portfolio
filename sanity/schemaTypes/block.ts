@@ -63,6 +63,21 @@ export const entry = defineType({
               hidden: ({ parent }) => parent?.mediaType !== 'image',
             }),
             defineField({
+              name: 'hasMobileImage',
+              title: 'Immagine diversa su mobile',
+              type: 'boolean',
+              description: 'Attivalo per mostrare su mobile (sotto i 768px) un\'altra immagine al posto di questa',
+              initialValue: false,
+              hidden: ({ parent }) => parent?.mediaType !== 'image',
+            }),
+            defineField({
+              name: 'mobileImage',
+              title: 'Immagine mobile',
+              type: 'image',
+              options: { hotspot: true },
+              hidden: ({ parent }) => parent?.mediaType !== 'image' || !parent?.hasMobileImage,
+            }),
+            defineField({
               name: 'videoUrl',
               title: 'URL Video',
               type: 'url',
@@ -90,12 +105,13 @@ export const entry = defineType({
             select: {
               mediaType: 'mediaType',
               image: 'image',
+              hasMobileImage: 'hasMobileImage',
               videoUrl: 'videoUrl',
             },
-            prepare({ mediaType, image, videoUrl }) {
+            prepare({ mediaType, image, hasMobileImage, videoUrl }) {
               return {
                 title: mediaType === 'video' ? (videoUrl ?? 'Video') : 'Immagine',
-                subtitle: mediaType,
+                subtitle: hasMobileImage ? `${mediaType} + mobile` : mediaType,
                 media: image,
               }
             },

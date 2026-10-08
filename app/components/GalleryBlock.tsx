@@ -13,6 +13,7 @@ interface MediaItem {
   _key?: string
   mediaType: 'image' | 'video'
   image?: SanityImage
+  mobileImage?: SanityImage
   videoUrl?: string
   videoRatio?: string
 }
@@ -56,12 +57,16 @@ export function GalleryBlock({ items, caption, mediaClassName }: GalleryBlockPro
                 />
               </div>
             ) : it.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={urlFor(it.image).width(1600).url()}
-                alt=""
-                style={{ width: '100%', height: 'auto' }}
-              />
+              <picture>
+                {it.mobileImage && (
+                  <source media="(max-width: 767px)" srcSet={urlFor(it.mobileImage).width(1000).url()} />
+                )}
+                <img
+                  src={urlFor(it.image).width(1600).url()}
+                  alt=""
+                  style={{ width: '100%', height: 'auto' }}
+                />
+              </picture>
             ) : null}
           </div>
         ))}
