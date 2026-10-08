@@ -38,7 +38,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <main className="flex-1 px-[20px]">
+      <main className="fade-in flex-1 px-[20px]">
         {blocks.map((block, index) => (
           <article key={block._id} className="mb-20">
             {block.items && block.items.length > 0 && (

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { urlFor } from '@/sanity/lib/image'
+import { FadeImg } from './FadeImg'
 import { RichText } from './RichText'
 
 interface SanityImage {
@@ -134,8 +135,8 @@ export function GalleryBlock({ items, caption, mediaClassName, priority = false 
                     {...sizeAttrs(it.mobileImage)}
                   />
                 )}
-                <img
-                  ref={(el) => {
+                <FadeImg
+                  imgRef={(el) => {
                     imgRefs.current[i] = el
                   }}
                   src={urlFor(it.image).width(1600).url()}

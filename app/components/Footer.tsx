@@ -19,7 +19,7 @@ export async function Footer() {
   const footerText = settings?.footerText ?? 'All rights reserved © Alessandro De Vecchi'
 
   return (
-    <footer className="px-[20px] pb-[20px] pt-[60px]">
+    <footer className="fade-in px-[20px] pb-[20px] pt-[60px]">
       {footerText} | Last updated on {dateStr}
     </footer>
   )

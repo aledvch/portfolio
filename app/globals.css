@@ -4,13 +4,52 @@
   --leading-relaxed: 1.2;
 }
 
+:root {
+  /* Very short fade used for everything that appears (pages, header, images) and for link hovers */
+  --fade-duration: 100ms;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Elements that appear when they are mounted: header, page content, footer */
+.fade-in {
+  animation: fade-in var(--fade-duration) ease-out both;
+}
+
+/* Images fade in when they finish loading (see useFadeOnLoad) */
+.fade-img {
+  transition: opacity var(--fade-duration) ease-out;
+}
+
+.fade-img[data-fade='hidden'] {
+  opacity: 0;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in {
+    animation: none;
+  }
+
+  .fade-img {
+    transition: none;
+  }
+}
+
 body {
   background: #ffffff;
   color: #808080;
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 500;
   font-size: 12px;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
   line-height: 1.2;
 }
 
@@ -29,7 +68,7 @@ body {
 
 .portfolio-link,
 .hover-link {
-  transition: color 0.15s ease;
+  transition: color var(--fade-duration) ease;
 }
 
 /* Hover only on devices with a real pointer: on touch, :hover sticks after a tap */

@@ -13,7 +13,7 @@ export default async function MainLayout({
 
   return (
     <>
-      <header className="flex justify-between items-start px-[20px] pt-[16px] pb-[70px]">
+      <header className="fade-in flex justify-between items-start px-[20px] pt-[16px] pb-[70px]">
         <div>
           <Link href="/" className="hover-link">Alessandro De Vecchi</Link>
           {settings?.headerText && (

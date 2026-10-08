@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import { client } from '@/sanity/lib/client'
 import { aboutQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/sanity/lib/image'
+import { AboutPhoto } from '../../components/AboutPhoto'
 import { RichText } from '../../components/RichText'
 import { Footer } from '../../components/Footer'
 
@@ -31,7 +31,7 @@ export default async function AboutPage() {
   if (!about) {
     return (
       <>
-        <main className="flex-1 px-[20px]">
+        <main className="fade-in flex-1 px-[20px]">
           <p>
             Pagina About non ancora configurata. Aggiungila dal pannello Sanity.
           </p>
@@ -43,9 +43,9 @@ export default async function AboutPage() {
 
   return (
     <>
-      <main className="flex-1 px-[20px]">
+      <main className="fade-in flex-1 px-[20px]">
         {about.photo && (
-          <Image
+          <AboutPhoto
             src={urlFor(about.photo).width(800).url()}
             alt={about.name || 'Photo'}
             width={about.photo.dimensions?.width ?? 800}
