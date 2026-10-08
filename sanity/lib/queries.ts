@@ -31,6 +31,10 @@ export const lastUpdatedQuery = `
   *[_type in ["entry", "about", "settings"]] | order(_updatedAt desc)[0]._updatedAt
 `
 
+export const aboutUpdatedQuery = `
+  *[_type == "about"][0]._updatedAt
+`
+
 export const aboutQuery = `
   *[_type == "about"][0] {
     name,

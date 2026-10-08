@@ -1,9 +1,15 @@
+import type { Metadata } from 'next'
 import Image from 'next/image'
 import { client } from '@/sanity/lib/client'
 import { aboutQuery } from '@/sanity/lib/queries'
 import { urlFor } from '@/sanity/lib/image'
 import { RichText } from '../../components/RichText'
 import { Footer } from '../../components/Footer'
+
+export const metadata: Metadata = {
+  title: 'About',
+  alternates: { canonical: '/about' },
+}
 
 interface About {
   name?: string

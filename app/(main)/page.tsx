@@ -1,7 +1,12 @@
+import type { Metadata } from 'next'
 import { client } from '@/sanity/lib/client'
 import { blocksQuery } from '@/sanity/lib/queries'
 import { GalleryBlock } from '../components/GalleryBlock'
 import { Footer } from '../components/Footer'
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+}
 
 type Size = 'full' | 'large' | 'medium' | 'small'
 
