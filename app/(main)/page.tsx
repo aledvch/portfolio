@@ -16,7 +16,7 @@ interface MediaItem {
   _key?: string
   mediaType: 'image' | 'video'
   image?: { asset: { _ref: string }; dimensions?: { width: number; height: number } }
-  mobileImage?: { asset: { _ref: string } }
+  mobileImage?: { asset: { _ref: string }; dimensions?: { width: number; height: number } }
   videoUrl?: string
   videoRatio?: string
 }
@@ -34,12 +34,13 @@ export default async function HomePage() {
   return (
     <>
       <main className="flex-1 px-[20px]">
-        {blocks.map((block) => (
+        {blocks.map((block, index) => (
           <article key={block._id} className="mb-20">
             {block.items && block.items.length > 0 && (
               <GalleryBlock
                 items={block.items}
                 caption={block.caption}
+                priority={index === 0}
                 mediaClassName={sizeClass[block.size ?? 'full']}
               />
             )}

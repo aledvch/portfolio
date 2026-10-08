@@ -9,7 +9,10 @@ export const blocksQuery = `
         ...,
         "dimensions": asset->metadata.dimensions
       },
-      "mobileImage": select(hasMobileImage == true => mobileImage),
+      "mobileImage": select(hasMobileImage == true => mobileImage {
+        ...,
+        "dimensions": asset->metadata.dimensions
+      }),
       videoUrl,
       videoRatio,
     },

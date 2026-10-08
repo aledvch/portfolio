@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { urlFor } from '@/sanity/lib/image'
 import { RichText } from './RichText'
 
 interface SanityImage {
   asset: { _ref: string }
   dimensions?: { width: number; height: number }
+  crop?: { top: number; bottom: number; left: number; right: number }
 }
 
 interface MediaItem {
@@ -22,6 +23,7 @@ interface GalleryBlockProps {
   items: MediaItem[]
   caption?: unknown[]
   mediaClassName?: string
+  priority?: boolean
 }
 
 function getEmbedUrl(url: string): string {
@@ -32,17 +34,84 @@ function getEmbedUrl(url: string): string {
   return url
 }
 
-export function GalleryBlock({ items, caption, mediaClassName }: GalleryBlockProps) {
-  const [current, setCurrent] = useState(0)
-  const isGallery = items.length > 1
+// Size of the image as served (crop applied): lets the browser reserve its space before it loads
+function sizeAttrs(image: SanityImage) {
+  const d = image.dimensions
+  if (!d) return {}
+  const c = image.crop
+  return {
+    width: Math.round(d.width * (1 - (c?.left ?? 0) - (c?.right ?? 0))),
+    height: Math.round(d.height * (1 - (c?.top ?? 0) - (c?.bottom ?? 0))),
+  }
+}
 
-  const goNext = () => setCurrent((current + 1) % items.length)
-  const goPrev = () => setCurrent((current - 1 + items.length) % items.length)
+// Items kept loaded around the one being shown: the next two and the previous one
+function neighbours(i: number, n: number) {
+  return [i, (i + 1) % n, (i + 2) % n, (i - 1 + n) % n]
+}
 
-  const item = items[current]
+export function GalleryBlock({ items, caption, mediaClassName, priority = false }: GalleryBlockProps) {
+  const n = items.length
+  const isGallery = n > 1
+
+  const [current, setCurrent] = useState(0) // what is on screen
+  const [target, setTarget] = useState(0) // what the user asked for
+  const [near, setNear] = useState(false) // gallery is close to the viewport
+  const [seen, setSeen] = useState<Set<number>>(() => new Set([0]))
+
+  const rootRef = useRef<HTMLDivElement>(null)
+  const imgRefs = useRef<(HTMLImageElement | null)[]>([])
+
+  // Start loading the neighbouring images only once the gallery is about to be seen
+  useEffect(() => {
+    const el = rootRef.current
+    if (!isGallery || near || !el) return
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setNear(true)
+          io.disconnect()
+        }
+      },
+      { rootMargin: '800px 0px' },
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [isGallery, near])
+
+  // Swap to the requested item only once its image is decoded, so the old one stays
+  // on screen until the new one can be painted: never an empty frame in between
+  useEffect(() => {
+    if (target === current) return
+    const el = imgRefs.current[target]
+    const needsImage = items[target].mediaType === 'image' && items[target].image
+    if (needsImage && !el) return
+    let cancelled = false
+    ;(async () => {
+      try {
+        await el?.decode()
+      } catch {}
+      if (!cancelled) setCurrent(target)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [target, current, items])
+
+  const goTo = (t: number) => {
+    setTarget(t)
+    setSeen((prev) => new Set([...prev, ...neighbours(target, n), ...neighbours(t, n)]))
+  }
+  const goNext = () => goTo((target + 1) % n)
+  const goPrev = () => goTo((target - 1 + n) % n)
+
+  // Images in the DOM: the ones already visited, plus the neighbours of the requested one
+  const mounted = new Set(seen)
+  mounted.add(target)
+  if (near) neighbours(target, n).forEach((i) => mounted.add(i))
 
   return (
-    <div>
+    <div ref={rootRef}>
       <div className={mediaClassName} style={{ position: 'relative' }}>
         {items.map((it, i) => (
           <div key={it._key ?? i} style={{ display: i === current ? 'block' : 'none' }}>
@@ -56,14 +125,24 @@ export function GalleryBlock({ items, caption, mediaClassName }: GalleryBlockPro
                   title="Video"
                 />
               </div>
-            ) : it.image ? (
+            ) : it.image && mounted.has(i) ? (
               <picture>
                 {it.mobileImage && (
-                  <source media="(max-width: 767px)" srcSet={urlFor(it.mobileImage).width(1000).url()} />
+                  <source
+                    media="(max-width: 767px)"
+                    srcSet={urlFor(it.mobileImage).width(1000).url()}
+                    {...sizeAttrs(it.mobileImage)}
+                  />
                 )}
                 <img
+                  ref={(el) => {
+                    imgRefs.current[i] = el
+                  }}
                   src={urlFor(it.image).width(1600).url()}
                   alt=""
+                  {...sizeAttrs(it.image)}
+                  loading={i === 0 && !priority ? 'lazy' : undefined}
+                  fetchPriority={i === 0 && priority ? 'high' : undefined}
                   style={{ width: '100%', height: 'auto' }}
                 />
               </picture>
