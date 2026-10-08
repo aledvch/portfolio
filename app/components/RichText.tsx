@@ -1,6 +1,6 @@
 'use client'
 
-import { PortableText, type PortableTextComponents } from '@portabletext/react'
+import { PortableText, type PortableTextComponents, type PortableTextProps } from '@portabletext/react'
 
 function createComponents(spacedParagraphs: boolean): PortableTextComponents {
   return {
@@ -36,7 +36,7 @@ export function RichText({ value, className, spacedParagraphs = false }: RichTex
   if (!value) return null
   return (
     <div className={`rich-text ${className ?? ''}`}>
-      <PortableText value={value as any} components={createComponents(spacedParagraphs)} />
+      <PortableText value={value as PortableTextProps['value']} components={createComponents(spacedParagraphs)} />
     </div>
   )
 }
