@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { orderRankField, orderRankOrdering } from '@sanity/orderable-document-list'
 
 const linkAnnotation = {
   name: 'link',
@@ -141,21 +142,18 @@ export const entry = defineType({
       of: [simplePortableText],
       description: 'Appare sotto il blocco. Seleziona il testo per aggiungere un link.',
     }),
+    // The order is now set by dragging entries in the list (see structure.ts).
+    // The old numeric field is kept hidden: it only breaks ties and covers entries without a rank.
     defineField({
       name: 'order',
-      title: 'Ordine di visualizzazione',
+      title: 'Ordine di visualizzazione (vecchio)',
       type: 'number',
-      description: 'Numero più basso = appare prima',
+      hidden: true,
       initialValue: 99,
     }),
+    orderRankField({ type: 'entry' }),
   ],
-  orderings: [
-    {
-      title: 'Ordine',
-      name: 'orderAsc',
-      by: [{ field: 'order', direction: 'asc' }],
-    },
-  ],
+  orderings: [orderRankOrdering],
   preview: {
     select: {
       title: 'title',

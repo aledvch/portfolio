@@ -1,5 +1,5 @@
 export const blocksQuery = `
-  *[_type == "entry"] | order(order asc) {
+  *[_type == "entry"] | order(orderRank asc, order asc) {
     _id,
     size,
     "items": items[] {
