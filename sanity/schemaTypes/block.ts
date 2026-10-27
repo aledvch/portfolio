@@ -94,6 +94,7 @@ export const entry = defineType({
                   { title: 'Verticale 4:5 (Instagram)', value: '4/5' },
                   { title: 'Verticale 9:16 (Stories/Reels)', value: '9/16' },
                   { title: 'Quadrato 1:1', value: '1/1' },
+                  { title: 'Orizzontale 3:2', value: '3/2' },
                   { title: 'Orizzontale 16:9', value: '16/9' },
                 ],
                 layout: 'radio',
