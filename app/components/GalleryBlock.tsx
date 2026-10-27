@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { urlFor } from '@/sanity/lib/image'
+import { imageUrl } from '@/sanity/lib/image'
 import { FadeImg } from './FadeImg'
 import { RichText } from './RichText'
 
@@ -24,8 +24,14 @@ interface GalleryBlockProps {
   items: MediaItem[]
   caption?: unknown[]
   mediaClassName?: string
+  // How wide the image is displayed, so the browser can pick the right file from the srcset
+  sizes?: string
   priority?: boolean
 }
+
+const WIDTHS = [800, 1200, 1600, 2400]
+const MOBILE_WIDTHS = [750, 1125, 1500]
+const MOBILE_SIZES = 'calc(100vw - 40px)'
 
 function getEmbedUrl(url: string): string {
   const youtube = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/)
@@ -46,12 +52,20 @@ function sizeAttrs(image: SanityImage) {
   }
 }
 
+// Files offered to the browser: the widths below the original, plus the original width
+// itself (capped at the largest width), so a small image is never enlarged
+function srcSetFor(image: SanityImage, widths: number[]) {
+  const cap = Math.min(sizeAttrs(image).width ?? Infinity, widths[widths.length - 1])
+  const list = [...widths.filter((w) => w < cap), cap]
+  return list.map((w) => `${imageUrl(image, w)} ${w}w`).join(', ')
+}
+
 // Items kept loaded around the one being shown: the next two and the previous one
 function neighbours(i: number, n: number) {
   return [i, (i + 1) % n, (i + 2) % n, (i - 1 + n) % n]
 }
 
-export function GalleryBlock({ items, caption, mediaClassName, priority = false }: GalleryBlockProps) {
+export function GalleryBlock({ items, caption, mediaClassName, sizes, priority = false }: GalleryBlockProps) {
   const n = items.length
   const isGallery = n > 1
 
@@ -131,7 +145,8 @@ export function GalleryBlock({ items, caption, mediaClassName, priority = false 
                 {it.mobileImage && (
                   <source
                     media="(max-width: 767px)"
-                    srcSet={urlFor(it.mobileImage).width(1000).url()}
+                    srcSet={srcSetFor(it.mobileImage, MOBILE_WIDTHS)}
+                    sizes={MOBILE_SIZES}
                     {...sizeAttrs(it.mobileImage)}
                   />
                 )}
@@ -139,7 +154,9 @@ export function GalleryBlock({ items, caption, mediaClassName, priority = false 
                   imgRef={(el) => {
                     imgRefs.current[i] = el
                   }}
-                  src={urlFor(it.image).width(1600).url()}
+                  src={imageUrl(it.image, 1600)}
+                  srcSet={srcSetFor(it.image, WIDTHS)}
+                  sizes={sizes}
                   alt=""
                   {...sizeAttrs(it.image)}
                   loading={i === 0 && !priority ? 'lazy' : undefined}

@@ -17,6 +17,16 @@ const sizeClass: Record<Size, string> = {
   small:  'w-full md:w-1/3',
 }
 
+// Displayed width of the image per block size (content area = viewport minus 20px per side),
+// mirroring sizeClass above: lets the browser pick the right file from the srcset
+const content = 'calc(100vw - 40px)'
+const sizesAttr: Record<Size, string> = {
+  full:   content,
+  large:  `(min-width: 768px) calc(${content} * 0.75), ${content}`,
+  medium: `(min-width: 768px) calc(${content} * 0.5), ${content}`,
+  small:  `(min-width: 768px) calc(${content} / 3), ${content}`,
+}
+
 interface MediaItem {
   _key?: string
   mediaType: 'image' | 'video'
@@ -47,6 +57,7 @@ export default async function HomePage() {
                 caption={block.caption}
                 priority={index === 0}
                 mediaClassName={sizeClass[block.size ?? 'full']}
+                sizes={sizesAttr[block.size ?? 'full']}
               />
             )}
           </article>
