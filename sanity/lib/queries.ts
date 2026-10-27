@@ -14,6 +14,7 @@ export const blocksQuery = `
         "dimensions": asset->metadata.dimensions
       }),
       videoUrl,
+      "videoFileUrl": videoFile.asset->url,
       videoRatio,
     },
     caption,

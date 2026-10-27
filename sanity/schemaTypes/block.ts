@@ -51,6 +51,7 @@ export const entry = defineType({
                 list: [
                   { title: 'Immagine', value: 'image' },
                   { title: 'Video (Vimeo / YouTube)', value: 'video' },
+                  { title: 'Video (file mp4)', value: 'file' },
                 ],
                 layout: 'radio',
               },
@@ -86,8 +87,24 @@ export const entry = defineType({
               hidden: ({ parent }) => parent?.mediaType !== 'video',
             }),
             defineField({
+              name: 'videoFile',
+              title: 'File video',
+              type: 'file',
+              description:
+                'mp4 (H.264), senza audio e con "faststart". Parte sempre alla qualità del file, senza le scelte automatiche di Vimeo.',
+              options: { accept: 'video/mp4,video/webm' },
+              hidden: ({ parent }) => parent?.mediaType !== 'file',
+              validation: (Rule) =>
+                Rule.custom((value, context) =>
+                  (context.parent as { mediaType?: string } | undefined)?.mediaType === 'file' && !value
+                    ? 'Carica un file video'
+                    : true,
+                ),
+            }),
+            defineField({
               name: 'videoRatio',
               title: 'Proporzioni video',
+              description: 'Deve corrispondere a quelle del video',
               type: 'string',
               options: {
                 list: [
@@ -100,7 +117,7 @@ export const entry = defineType({
                 layout: 'radio',
               },
               initialValue: '4/5',
-              hidden: ({ parent }) => parent?.mediaType !== 'video',
+              hidden: ({ parent }) => parent?.mediaType !== 'video' && parent?.mediaType !== 'file',
             }),
           ],
           preview: {
@@ -109,10 +126,16 @@ export const entry = defineType({
               image: 'image',
               hasMobileImage: 'hasMobileImage',
               videoUrl: 'videoUrl',
+              videoFileName: 'videoFile.asset.originalFilename',
             },
-            prepare({ mediaType, image, hasMobileImage, videoUrl }) {
+            prepare({ mediaType, image, hasMobileImage, videoUrl, videoFileName }) {
               return {
-                title: mediaType === 'video' ? (videoUrl ?? 'Video') : 'Immagine',
+                title:
+                  mediaType === 'video'
+                    ? (videoUrl ?? 'Video')
+                    : mediaType === 'file'
+                      ? (videoFileName ?? 'Video (file)')
+                      : 'Immagine',
                 subtitle: hasMobileImage ? `${mediaType} + mobile` : mediaType,
                 media: image,
               }

@@ -29,10 +29,11 @@ const sizesAttr: Record<Size, string> = {
 
 interface MediaItem {
   _key?: string
-  mediaType: 'image' | 'video'
+  mediaType: 'image' | 'video' | 'file'
   image?: { asset: { _ref: string }; dimensions?: { width: number; height: number } }
   mobileImage?: { asset: { _ref: string }; dimensions?: { width: number; height: number } }
   videoUrl?: string
+  videoFileUrl?: string
   videoRatio?: string
 }
 

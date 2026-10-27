@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { imageUrl } from '@/sanity/lib/image'
 import { FadeImg } from './FadeImg'
+import { FadeVideo } from './FadeVideo'
 import { RichText } from './RichText'
 
 interface SanityImage {
@@ -13,11 +14,28 @@ interface SanityImage {
 
 interface MediaItem {
   _key?: string
-  mediaType: 'image' | 'video'
+  mediaType: 'image' | 'video' | 'file'
   image?: SanityImage
   mobileImage?: SanityImage
   videoUrl?: string
+  videoFileUrl?: string
   videoRatio?: string
+}
+
+type Media = HTMLImageElement | HTMLVideoElement
+
+// Resolves once the first frame of a video is available (or it failed): it can be shown
+function videoReady(el: HTMLVideoElement) {
+  if (el.readyState >= 2) return Promise.resolve()
+  return new Promise<void>((resolve) => {
+    const done = () => {
+      el.removeEventListener('loadeddata', done)
+      el.removeEventListener('error', done)
+      resolve()
+    }
+    el.addEventListener('loadeddata', done)
+    el.addEventListener('error', done)
+  })
 }
 
 interface GalleryBlockProps {
@@ -75,7 +93,7 @@ export function GalleryBlock({ items, caption, mediaClassName, sizes, priority =
   const [seen, setSeen] = useState<Set<number>>(() => new Set([0]))
 
   const rootRef = useRef<HTMLDivElement>(null)
-  const imgRefs = useRef<(HTMLImageElement | null)[]>([])
+  const mediaRefs = useRef<(Media | null)[]>([])
 
   // Start loading the neighbouring images only once the gallery is about to be seen
   useEffect(() => {
@@ -94,17 +112,20 @@ export function GalleryBlock({ items, caption, mediaClassName, sizes, priority =
     return () => io.disconnect()
   }, [isGallery, near])
 
-  // Swap to the requested item only once its image is decoded, so the old one stays
-  // on screen until the new one can be painted: never an empty frame in between
+  // Swap to the requested item only once its image is decoded (or its video has a first
+  // frame), so the old one stays on screen until the new one can be painted: never an
+  // empty frame in between
   useEffect(() => {
     if (target === current) return
-    const el = imgRefs.current[target]
-    const needsImage = items[target].mediaType === 'image' && items[target].image
-    if (needsImage && !el) return
+    const el = mediaRefs.current[target]
+    const item = items[target]
+    const needsMedia = (item.mediaType === 'image' && item.image) || (item.mediaType === 'file' && item.videoFileUrl)
+    if (needsMedia && !el) return
     let cancelled = false
     ;(async () => {
       try {
-        await el?.decode()
+        if (el instanceof HTMLVideoElement) await videoReady(el)
+        else await el?.decode()
       } catch {}
       if (!cancelled) setCurrent(target)
     })()
@@ -112,6 +133,15 @@ export function GalleryBlock({ items, caption, mediaClassName, sizes, priority =
       cancelled = true
     }
   }, [target, current, items])
+
+  // Hosted videos play only while they are on screen
+  useEffect(() => {
+    mediaRefs.current.forEach((el, i) => {
+      if (!(el instanceof HTMLVideoElement)) return
+      if (i === current) el.play().catch(() => {})
+      else el.pause()
+    })
+  }, [current])
 
   const goTo = (t: number) => {
     setTarget(t)
@@ -140,6 +170,19 @@ export function GalleryBlock({ items, caption, mediaClassName, sizes, priority =
                   title="Video"
                 />
               </div>
+            ) : it.mediaType === 'file' && it.videoFileUrl && mounted.has(i) ? (
+              <FadeVideo
+                videoRef={(el) => {
+                  mediaRefs.current[i] = el
+                }}
+                src={it.videoFileUrl}
+                autoPlay={i === 0}
+                muted
+                loop
+                playsInline
+                preload="auto"
+                style={{ display: 'block', width: '100%', aspectRatio: it.videoRatio ?? '4/5', objectFit: 'cover' }}
+              />
             ) : it.image && mounted.has(i) ? (
               <picture>
                 {it.mobileImage && (
@@ -152,7 +195,7 @@ export function GalleryBlock({ items, caption, mediaClassName, sizes, priority =
                 )}
                 <FadeImg
                   imgRef={(el) => {
-                    imgRefs.current[i] = el
+                    mediaRefs.current[i] = el
                   }}
                   src={imageUrl(it.image, 1600)}
                   srcSet={srcSetFor(it.image, WIDTHS)}
